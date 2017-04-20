@@ -15,6 +15,10 @@ class ViewController: UIViewController {
     var trayCenterWhenOpened: CGPoint!
     var trayCenterWhenClosed: CGPoint!
     
+    var initialSmileyCenter : CGPoint!
+    
+    var newlyCreatedFace: UIImageView!
+    
     @IBAction func didTapGestureRecognizer(_ sender: UITapGestureRecognizer) {
         if trayView.center == trayCenterWhenClosed {
             // open
@@ -37,6 +41,38 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    @IBAction func onSmileyPanned(_ panGestureRecognizer: UIPanGestureRecognizer) {
+        
+        if panGestureRecognizer.state == .began {
+            
+            // Gesture recognizers know the view they are attached to
+            let imageView = panGestureRecognizer.view as! UIImageView
+            
+            // Create a new image view that has the same image as the one currently panning
+            newlyCreatedFace = UIImageView(image: imageView.image)
+            
+            // Add the new face to the tray's parent view.
+            view.addSubview(newlyCreatedFace)
+            
+            // Initialize the position of the new face.
+            newlyCreatedFace.center = imageView.center
+            
+            // Since the original face is in the tray, but the new face is in the
+            // main view, you have to offset the coordinates
+            newlyCreatedFace.center.y += trayView.frame.origin.y
+            initialSmileyCenter = newlyCreatedFace.center
+           
+        } else if panGestureRecognizer.state == .changed {
+            
+            newlyCreatedFace.center = CGPoint(x: initialSmileyCenter.x + panGestureRecognizer.translation(in: self.newlyCreatedFace).x, y: initialSmileyCenter.y + panGestureRecognizer.translation(in: self.newlyCreatedFace).y)
+            
+            
+        } else if panGestureRecognizer.state == .ended {
+            
+            
+        }
+
+    }
 
     @IBAction func onTrayPanGesture(_ panGestureRecognizer: UIPanGestureRecognizer) {
         // Absolute (x,y) coordinates in parent view (parentView should be
